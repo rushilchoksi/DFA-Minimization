@@ -24,7 +24,7 @@ def createEquivalence(iterationList):
     for pairData in iterationList:
         tempStateList, elemList = [], []
         if len(pairData) >= 2:
-            for pairValue in list(itertools.combinations(i, 2)):
+            for pairValue in list(itertools.combinations(pairData, 2)):
                 tempListOne, tempListTwo = mainData.get(pairValue[0]), mainData.get(pairValue[1])
                 nfsResult, fsResult = [], []
                 for transitionValue in range(len(tempListOne)):
@@ -43,7 +43,7 @@ def createEquivalence(iterationList):
                 if len(pairValue) != 0:
                     currentPassList.append(pairValue)
         else:
-            currentPassList.append(i)
+            currentPassList.append(pairData)
 
     if searchElement(mainData.get('firstState'), currentPassList) != True:
         currentPassList.append(mainData.get('firstState'))
@@ -101,4 +101,15 @@ print(f'\nIteration #{str(iterationCount).zfill(2)}: {firstPassList}')
 while firstPassList != currentPassList:
     iterationCount += 1
     currentPassList = createEquivalence(firstPassList)
-    print(f'Iteration #{str(iterationCount).zfill(2)}: {firstPassList}')
+    print(f'Iteration #{str(iterationCount).zfill(2)}: {currentPassList}')
+
+newNonFinalStates, newFinalStates = [], []
+for transitionState in currentPassList:
+    for stateElements in transitionState:
+        if stateElements in mainData.get('finalState') and transitionState not in newFinalStates:
+            newFinalStates.append(transitionState)
+
+    if transitionState not in newFinalStates:
+        newNonFinalStates.append(transitionState)
+
+print(f'\nNon-final states: {newNonFinalStates}\nFinal states: {newFinalStates}')
