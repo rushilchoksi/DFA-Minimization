@@ -64,7 +64,7 @@ if len(sys.argv) != 3:
 
 with open(sys.argv[2], 'r') as jsonFile:
     mainData = json.load(jsonFile)
-    print(mainData)
+    print(f'Loading DFA structure:\n{mainData}\n')
 
 stateTransitionTable = []
 for i in mainData.keys():
