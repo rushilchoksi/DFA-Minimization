@@ -12,6 +12,11 @@ def searchElement(searchValue, nestedListData):
                 return True
     return False
 
+def searchNode(searchValue, aliasDict):
+    for transitionState in aliasDict.keys():
+        if searchValue in aliasDict.get(transitionState):
+            return transitionState
+
 def mostCommon(listData):
     tempList, flatList = [], [elemData for subList in listData for elemData in subList]
     for i in list(set(flatList)):
@@ -67,7 +72,7 @@ for i in mainData.keys():
         stateTransitionTable.append([i, ', '.join(mainData.get(i))])
 
 print(f'DFA: State Transition Table')
-print(tabulate(stateTransitionTable, headers = ['State', '01'], tablefmt = 'psql'))
+print(tabulate(stateTransitionTable, headers = ['State', '0, 1'], tablefmt = 'psql'))
 print(f'Final states: {", ".join(mainData.get("finalState"))}')
 
 tempList, reachableStates = [], {}
@@ -85,7 +90,7 @@ for i in reachableStates.keys():
     reachableStatesTable.append([i, ', '.join(mainData.get(i))])
 
 print(f'\nDFA: State Transition Table After Removing Unreachable States')
-print(tabulate(reachableStatesTable, headers = ['State', '01'], tablefmt = 'psql'))
+print(tabulate(reachableStatesTable, headers = ['State', '0, 1'], tablefmt = 'psql'))
 
 nonFinalStates, finalStates = [], mainData.get("finalState")
 for i in reachableStates.keys():
@@ -103,6 +108,10 @@ while firstPassList != currentPassList:
     currentPassList = createEquivalence(firstPassList)
     print(f'Iteration #{str(iterationCount).zfill(2)}: {currentPassList}')
 
+aliasDict = {}
+for indexVal, transitionState in enumerate(currentPassList):
+    aliasDict[indexVal] = transitionState
+
 newNonFinalStates, newFinalStates = [], []
 for transitionState in currentPassList:
     for stateElements in transitionState:
@@ -113,3 +122,28 @@ for transitionState in currentPassList:
         newNonFinalStates.append(transitionState)
 
 print(f'\nNon-final states: {newNonFinalStates}\nFinal states: {newFinalStates}')
+
+newTransitionDict = {}
+for i in currentPassList:
+    nodeElementValue = str(list(aliasDict.keys())[list(aliasDict.values()).index(i)])
+    if len(i) == 1:
+        tempData, tempTransitionState = mainData.get(str(i[0])), []
+        for indexVal, j in enumerate(tempData):
+            tempTransitionState.append(str(searchNode(j, aliasDict)))
+
+        newTransitionDict[nodeElementValue] = tempTransitionState
+    else:
+        for j in i:
+            tempData, tempTransitionState = mainData.get(str(j)), []
+            for indexVal, k in enumerate(tempData):
+                tempTransitionState.append(str(searchNode(k, aliasDict)))
+
+            newTransitionDict[nodeElementValue] = tempTransitionState
+
+minimizedStatesTable = []
+for i in newTransitionDict.keys():
+    minimizedStatesTable.append([i, ', '.join(aliasDict.get(int(i))), ', '.join(newTransitionDict.get(i))])
+
+print(f'\nMinimized DFA: State Transition Table')
+print(tabulate(minimizedStatesTable, headers = ['State', 'Alias', '0, 1'], tablefmt = 'psql'))
+print(f'Final states: {newFinalStates}')
