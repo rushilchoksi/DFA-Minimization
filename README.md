@@ -9,7 +9,7 @@ Python based utility to perform minimization of deterministic finite automata us
 ```
 git clone https://github.com/rushilchoksi/DFA-Minimization.git
 cd DFA-Minimization/
-pip3 install -r requirements.txt
+pip3 install tabulate
 ```
 
 ## Usage
